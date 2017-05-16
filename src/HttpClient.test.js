@@ -91,6 +91,17 @@ describe('HttpClient', () => {
     });
   });
 
+  describe('when a request interceptor throws an error', () => {
+    it('is immediately raised', () => {
+      const interceptorError = new Error();
+      const interceptor = () => {
+        throw interceptorError;
+      };
+      httpClient = new HttpClient({requestInterceptors: [interceptor]});
+      return expect(httpClient.fetch()).rejects.toBe(interceptorError);
+    });
+  });
+
   describe('when the fetch() resolves', () => {
     it('invokes the response interceptors with the Response', () => {
       const mockResponse = {foo: 'bar'};
@@ -161,6 +172,17 @@ describe('HttpClient', () => {
           });
         });
       });
+    });
+  });
+
+  describe('when a response interceptor throws an error', () => {
+    it('is immediately raised', () => {
+      const interceptorError = new Error();
+      const interceptor = () => {
+        throw interceptorError;
+      };
+      httpClient = new HttpClient({responseInterceptors: [interceptor]});
+      return expect(httpClient.fetch()).rejects.toBe(interceptorError);
     });
   });
 });
