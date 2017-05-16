@@ -12,31 +12,6 @@ import HttpClient from './HttpClient';
   });
 })();
 
-/*
-
-Examples:
-
-  function snakeToCamelCase(response) {
-    ...
-  }
-
-  const httpClient = new HttpClient({
-    requestInterceptors: [
-      addBaseUrl('https://api.remerge.io'),
-      addDefaultHeaders({ Accept: 'application/json' }),
-      (request) => Object.assign({}, request, { body: camelToSnakeCase(request.body) }),
-    ],
-
-    responseInterceptors: [
-      logOutIfCredentialsInvalid,
-      rejectHttpFailures,
-      parseResponseBodyAsJSON,
-      snakeToCamelCase,
-    ],
-  });
-
-  httpClient.fetch('/some/url', { method: 'POST', body: {} });
-*/
 describe('HttpClient', () => {
   let httpClient;
 
@@ -72,13 +47,6 @@ describe('HttpClient', () => {
   });
 
   describe('with multiple request interceptors', () => {
-    beforeEach(() => {
-      // function addBaseUrl(request) {
-      //   const url = request.url;
-      //   return newRequest;
-      // }
-    });
-
     it('passes the result of the first interceptor to the second interceptor', () => {
       const firstInterceptorResult = {foo: 'bar'};
       const firstInterceptor = jest.fn(() => firstInterceptorResult);
