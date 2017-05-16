@@ -1,23 +1,14 @@
+async function processInterceptor(memo, interceptor) {
+  return interceptor(await memo);
+}
+
 export default function HttpClient(options = {}) {
   const {requestInterceptors = [], responseInterceptors = []} = options;
   const client = {
-    fetch(url, requestObject) {
-      let newRequestObject = Object.assign({}, {url}, requestObject);
-      return Promise.resolve(
-        requestInterceptors.reduce((memo, interceptor) => {
-          return Promise.resolve(memo).then((prevInterceptorResult) => {
-            return interceptor(prevInterceptorResult);
-          });
-        }, newRequestObject)
-      ).then((newRequestObject) => {
-        return fetch(newRequestObject.url, newRequestObject).then((response) => {
-          return responseInterceptors.reduce((memo, interceptor) => {
-            return Promise.resolve(memo).then((prevInterceptorResult) => {
-              return interceptor(prevInterceptorResult);
-            });
-          }, response);
-        });
-      });
+    async fetch(url, options) {
+      let requestObject = await requestInterceptors.reduce(processInterceptor, Object.assign({}, {url}, options));
+      let response = await fetch(requestObject.url, requestObject);
+      return responseInterceptors.reduce(processInterceptor, response);
     },
   };
   return client;
