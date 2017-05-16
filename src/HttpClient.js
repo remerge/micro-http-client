@@ -7,8 +7,7 @@ export default function HttpClient(options = {}) {
         return interceptor(prevInterceptorResult);
       }, newRequestObject);
 
-      const responsePromise = fetch(newRequestObject.url, newRequestObject);
-      return responsePromise.then((response) => {
+      return fetch(newRequestObject.url, newRequestObject).then((response) => {
         return responseInterceptors.reduce((prevInterceptorResult, interceptor) => {
           return interceptor(prevInterceptorResult);
         }, response);
