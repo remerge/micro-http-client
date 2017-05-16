@@ -107,8 +107,6 @@ describe('HttpClient', () => {
     });
 
     it('returns a Promise that resolves with the return value of the interceptor', () => {
-      window.fetch = jest.fn(() => Promise.resolve());
-
       const mockResult = {foo: 'bar'};
       const interceptor = jest.fn(() => {
         return mockResult;
@@ -120,10 +118,19 @@ describe('HttpClient', () => {
       });
     });
 
+    it('waits for an asynchronous response interceptor', () => {
+      const mockResult = {foo: 'bar'};
+      const interceptor = jest.fn(() => Promise.resolve(mockResult));
+
+      httpClient = new HttpClient({responseInterceptors: [interceptor]});
+
+      return httpClient.fetch().then((result) => {
+        expect(result).toBe(mockResult);
+      });
+    });
+
     describe('and there are multiple response interceptors', () => {
       it('invokes the second response interceptor with the result of the first', () => {
-        window.fetch = jest.fn(() => Promise.resolve());
-
         const firstInterceptorResult = {foo: 'bar'};
         const firstInterceptor = jest.fn(() => firstInterceptorResult);
         const secondInterceptor = jest.fn(() => {
@@ -136,6 +143,22 @@ describe('HttpClient', () => {
 
         return httpClient.fetch().then(() => {
           expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+        });
+      });
+
+      describe('which are asynchronous', () => {
+        it('invokes the second response interceptor with the result of the first', () => {
+          const firstInterceptorResult = {foo: 'bar'};
+          const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
+          const secondInterceptor = jest.fn(() => {});
+
+          httpClient = new HttpClient({
+            responseInterceptors: [firstInterceptor, secondInterceptor],
+          });
+
+          return httpClient.fetch().then(() => {
+            expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+          });
         });
       });
     });

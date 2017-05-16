@@ -11,8 +11,10 @@ export default function HttpClient(options = {}) {
         }, newRequestObject)
       ).then((newRequestObject) => {
         return fetch(newRequestObject.url, newRequestObject).then((response) => {
-          return responseInterceptors.reduce((prevInterceptorResult, interceptor) => {
-            return interceptor(prevInterceptorResult);
+          return responseInterceptors.reduce((memo, interceptor) => {
+            return Promise.resolve(memo).then((prevInterceptorResult) => {
+              return interceptor(prevInterceptorResult);
+            });
           }, response);
         });
       });
