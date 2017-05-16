@@ -4,8 +4,10 @@ export default function HttpClient(options = {}) {
     fetch(url, requestObject) {
       let newRequestObject = Object.assign({}, {url}, requestObject);
       return Promise.resolve(
-        requestInterceptors.reduce((prevInterceptorResult, interceptor) => {
-          return interceptor(prevInterceptorResult);
+        requestInterceptors.reduce((memo, interceptor) => {
+          return Promise.resolve(memo).then((prevInterceptorResult) => {
+            return interceptor(prevInterceptorResult);
+          });
         }, newRequestObject)
       ).then((newRequestObject) => {
         return fetch(newRequestObject.url, newRequestObject).then((response) => {

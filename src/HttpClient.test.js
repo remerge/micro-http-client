@@ -71,8 +71,23 @@ describe('HttpClient', () => {
       httpClient = new HttpClient({
         requestInterceptors: [firstInterceptor, secondInterceptor],
       });
-      httpClient.fetch('someUrl');
-      expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+      return httpClient.fetch('someUrl').then(() => {
+        expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+      });
+    });
+
+    describe('which are asynchronous', () => {
+      it('passes the result of the first interceptor to the second interceptor', () => {
+        const firstInterceptorResult = {foo: 'bar'};
+        const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
+        const secondInterceptor = jest.fn(() => Promise.resolve({}));
+        httpClient = new HttpClient({
+          requestInterceptors: [firstInterceptor, secondInterceptor],
+        });
+        return httpClient.fetch('someUrl').then(() => {
+          expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+        });
+      });
     });
   });
 
