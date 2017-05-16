@@ -4,7 +4,7 @@ import HttpClient from './HttpClient';
   const originalFetch = window.fetch;
 
   beforeEach(() => {
-    window.fetch = jest.fn(() => new Promise(() => {}));
+    window.fetch = jest.fn(() => Promise.resolve());
   });
 
   afterAll(() => {
@@ -22,8 +22,9 @@ describe('HttpClient', () => {
   it('calls `fetch`', () => {
     const url = 'some/url';
     const requestObject = {foo: 'bar'};
-    httpClient.fetch(url, requestObject);
-    expect(window.fetch).toHaveBeenCalledWith(url, {url, foo: 'bar'});
+    return httpClient.fetch(url, requestObject).then(() => {
+      expect(window.fetch).toHaveBeenCalledWith(url, {url, foo: 'bar'});
+    });
   });
 
   it('invokes request interceptors with the request object', () => {
@@ -32,8 +33,21 @@ describe('HttpClient', () => {
     });
     httpClient = new HttpClient({requestInterceptors: [interceptor]});
     const url = 'some/url';
-    httpClient.fetch(url, {body: 'some body'});
-    expect(interceptor).toHaveBeenCalledWith({url, body: 'some body'});
+    return httpClient.fetch(url, {body: 'some body'}).then(() => {
+      expect(interceptor).toHaveBeenCalledWith({url, body: 'some body'});
+    });
+  });
+
+  it('waits for an asynchronous request interceptor', () => {
+    const mockRequest = {url: 'mockUrl', foo: 'bar'};
+    const interceptor = jest.fn(() => {
+      return Promise.resolve(mockRequest);
+    });
+
+    httpClient = new HttpClient({requestInterceptors: [interceptor]});
+    return httpClient.fetch().then(() => {
+      expect(window.fetch).toHaveBeenCalledWith(mockRequest.url, mockRequest);
+    });
   });
 
   it('calls `fetch` with the output of the interceptors', () => {
@@ -42,8 +56,9 @@ describe('HttpClient', () => {
       return interceptorResult;
     };
     httpClient = new HttpClient({requestInterceptors: [interceptor]});
-    httpClient.fetch();
-    expect(window.fetch).toHaveBeenCalledWith(interceptorResult.url, interceptorResult);
+    return httpClient.fetch().then(() => {
+      expect(window.fetch).toHaveBeenCalledWith(interceptorResult.url, interceptorResult);
+    });
   });
 
   describe('with multiple request interceptors', () => {
