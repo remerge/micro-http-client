@@ -88,3 +88,21 @@ const client = new HttpClient({
   responseInterceptors: [ (response) => response.json(), processBody(JSON.parse) ],
 });
 ```
+
+### `rejectIfUnsuccessful`
+
+Throws an error on any non-success HTTP status code.
+
+#### Examples
+
+```js
+const client = new HttpClient({
+  responseInterceptors: [ rejectIfUnsuccessful ],
+});
+client.fetch('/my/profile', { method: 'PUT' })
+  .catch((error) => {
+    if (error.response.status === 422) {
+      // Handle validation failure
+    }
+  })
+```
