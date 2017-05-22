@@ -7,6 +7,9 @@ module.exports = {
   env: {
     jest: true,
   },
+  globals: {
+    fetch: true,
+  },
   rules: {
     'max-len': 0,
     'require-jsdoc': 0,
