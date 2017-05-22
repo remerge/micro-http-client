@@ -1,11 +1,10 @@
 const hasOwnProperty = (object, property) => Object.hasOwnProperty.call(object, property);
 
-class InterceptorError extends Error {
-  constructor(message, additional = {}) {
-    super(message);
-    this.message = message;
-    Object.assign(additional);
-  }
+export function InterceptorError(message, additional = {}) {
+  Error.call(this, message);
+  this.message = message;
+  Object.assign(this, additional);
+  return this;
 }
 
 function stripTrailingSlash(string) {

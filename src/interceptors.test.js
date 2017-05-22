@@ -10,8 +10,9 @@ describe('the prependHost() interceptor', () => {
   it('requires an absolute path', () => {
     const interceptor = prependHost('example.com');
     const request = { url: './relative' };
-    expect(() => interceptor(request)).toThrow(/requires an absolute path/);
-    expect(() => interceptor(request)).toThrow(InterceptorError);
+    expect(() => interceptor(request)).toThrow(
+      new InterceptorError('prependHost() requires an absolute path', { request }),
+    );
   });
 
   it('preserves the rest of the request', () => {
