@@ -18,6 +18,6 @@ export function prependHost(host) {
     if (absolutePath[0] !== '/') {
       throw new InterceptorError('prependHost() requires an absolute path', { request });
     }
-    return { url: `${sanitizedHost}${absolutePath}` };
+    return Object.assign({}, request, { url: `${sanitizedHost}${absolutePath}` });
   };
 }

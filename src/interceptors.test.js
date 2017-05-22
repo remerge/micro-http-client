@@ -1,17 +1,3 @@
-/*
-
-prependHost()
-
-  - takes a host string as input
-  - returns a function (interceptor), which:
-    - takes a request (object) as input
-    - gives a request as output
-    - prepends the given host string to the request's URL
-    - doesn't generate "//"
-    - doesn't modify the URL if it includes a host already
-
-*/
-
 import { InterceptorError, prependHost } from './interceptors';
 
 describe('the prependHost() interceptor', () => {
@@ -26,6 +12,12 @@ describe('the prependHost() interceptor', () => {
     const request = { url: './relative' };
     expect(() => interceptor(request)).toThrow(/requires an absolute path/);
     expect(() => interceptor(request)).toThrow(InterceptorError);
+  });
+
+  it('preserves the rest of the request', () => {
+    const interceptor = prependHost('example.com');
+    const result = interceptor({ url: '/foo', headers: { Accept: 'application/json' } });
+    expect(result).toEqual({ url: 'example.com/foo', headers: { Accept: 'application/json' } });
   });
 
   describe('when the host has a trailing slash', () => {
