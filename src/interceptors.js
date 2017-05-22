@@ -23,9 +23,9 @@ export function prependHost(host) {
 }
 
 export function addHeaders(headers) {
-  return (request) => {
+  return async (request) => {
     if (typeof headers === 'function') {
-      const newHeaders = Object.assign({}, headers(), request.headers);
+      const newHeaders = Object.assign({}, await headers(), request.headers);
       return Object.assign({}, request, { headers: newHeaders });
     }
 
