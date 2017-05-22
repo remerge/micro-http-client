@@ -21,3 +21,15 @@ export function prependHost(host) {
     return Object.assign({}, request, { url: `${sanitizedHost}${absolutePath}` });
   };
 }
+
+export function addHeaders(headers) {
+  return (request) => {
+    if (typeof headers === 'function') {
+      const newHeaders = Object.assign({}, headers(), request.headers);
+      return Object.assign({}, request, { headers: newHeaders });
+    }
+
+    const newHeaders = Object.assign({}, headers, request.headers);
+    return Object.assign({}, request, { headers: newHeaders });
+  };
+}
