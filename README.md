@@ -1,6 +1,37 @@
 # HttpClient
 
+Defines a thin client around the [Fetch API](https://developer.mozilla.org/en/docs/Web/API/Fetch_API).
+
+A client is defined as a set of "interceptors", used to process requests and responses in a consistent, centralized manner for an application. Useful for decoupling application state (like authentication credentials) from persistence infrastructure.
+
+## Interceptors
+
+Interceptors are plain JavaScript functions which take a request or response object and return a modified object (i.e. request/repsonse reducers).
+
+## API
+
+### `HttpClient({ requestInterceptors: <array>, responseInterceptors: <array> })`
+
+### `HttpClient::fetch(url, options)`
+
+The client exposes a single method, identical to the browser Fetch method in its two-parameter form. Note that it does not accept a `Request` object, as these are problematic to reduce over.
+
+### Return value
+
+Returns a Promise that resolves with the result of calling the global `fetch()` with the processed request object, then applying each of the response interceptors to the result.
+
+Note that the global `fetch()` resolves with a [`Response` object](https://developer.mozilla.org/en-US/docs/Web/API/Response), whose behavior can be somewhat unexpected - e.g. the `headers` property is a [`Headers` object](https://developer.mozilla.org/en-US/docs/Web/API/Headers) rather than a POJO, and the body is a single-use stream.
+
 ## Standard Interceptors
+
+Included is a collection of basic interceptors to facilitate the following common application scenarios:
+
+- adding MIME type headers (e.g. `'application/json'`)
+- adding authentication headers
+- processing the request body as a JSON string
+- converting the response body to JSON
+- rejecting HTTP error codes
+- processing the response stream e.g. to render a large image as it downloads
 
 ### `prependHost(string)`
 
@@ -54,6 +85,6 @@ Note that a GET or HEAD request cannot have a body, and no special handling is i
 ```js
 const client = new HttpClient({
   requestInterceptors: [ processBody(JSON.stringify) ],
-  responseInterceptors: [ processBody(JSON.parse) ],
+  responseInterceptors: [ (response) => response.json(), processBody(JSON.parse) ],
 });
 ```
