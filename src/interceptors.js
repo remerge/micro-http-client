@@ -1,18 +1,23 @@
-function stripTrailingSlash(string) {
-  if (string[string.length - 1] != '/') return string;
-  return string.slice(0, -1);
+class InterceptorError extends Error {
+  constructor(message, additional = {}) {
+    super(message);
+    this.message = message;
+    Object.assign(additional);
+  }
 }
 
-function stripLeadingSlash(string) {
-  if (string[0] != '/') return string;
-  return string.slice(1);
+function stripTrailingSlash(string) {
+  if (string[string.length - 1] !== '/') return string;
+  return string.slice(0, -1);
 }
 
 export function prependHost(host) {
   const sanitizedHost = stripTrailingSlash(host);
-  return ({ url: path }) => {
-    const sanitizedPath = stripLeadingSlash(path);
-    const newUrl = `${sanitizedHost}/${sanitizedPath}`;
-    return { url: newUrl };
+  return (request) => {
+    const { url: absolutePath } = request;
+    if (absolutePath[0] !== '/') {
+      throw new InterceptorError('prependHost() requires an absolute path', { request });
+    }
+    return { url: `${sanitizedHost}${absolutePath}` };
   };
 }
