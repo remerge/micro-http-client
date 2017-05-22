@@ -1,3 +1,5 @@
+const hasOwnProperty = (object, property) => Object.hasOwnProperty.call(object, property);
+
 class InterceptorError extends Error {
   constructor(message, additional = {}) {
     super(message);
@@ -31,5 +33,12 @@ export function addHeaders(headers) {
 
     const newHeaders = Object.assign({}, headers, request.headers);
     return Object.assign({}, request, { headers: newHeaders });
+  };
+}
+
+export function processBody(processorFunction) {
+  return async (request) => {
+    if (!hasOwnProperty(request, 'body')) return request;
+    return Object.assign({}, request, { body: await processorFunction(request.body) });
   };
 }

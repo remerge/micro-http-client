@@ -1,4 +1,4 @@
-import { InterceptorError, addHeaders, prependHost } from './interceptors';
+import { InterceptorError, addHeaders, prependHost, processBody } from './interceptors';
 
 describe('the prependHost() interceptor', () => {
   it('prepends the host to the request URL', () => {
@@ -73,6 +73,48 @@ describe('the addHeaders() interceptor', () => {
         const result = await interceptor({});
         expect(result).toEqual({ headers: { Accept: 'application/json' } });
       });
+    });
+  });
+});
+
+describe('the processBody() interceptor', () => {
+  describe('when the request has a body', () => {
+    it('calls the given function with the request body', async () => {
+      const originalBody = 'foobar';
+      const processorFunction = jest.fn();
+      const interceptor = processBody(processorFunction);
+      await interceptor({ body: originalBody });
+      expect(processorFunction).toHaveBeenCalledWith(originalBody);
+    });
+
+    it('replaces the request body with the result of the given function', async () => {
+      const processedBody = 'bazboz';
+      const interceptor = processBody(() => processedBody);
+      const result = await interceptor({ body: 'foobar' });
+      expect(result.body).toBe(processedBody);
+    });
+
+    it('preserves the rest of the request', async () => {
+      const interceptor = processBody(() => {});
+      const result = await interceptor({ body: 'somebody', headers: { Accept: 'application/json' } });
+      expect(result).toEqual({ body: undefined, headers: { Accept: 'application/json' } });
+    });
+
+    describe('and the given function is asynchronous', () => {
+      it('waits for the processor function to complete', async () => {
+        const processedBody = 'bazboz';
+        const interceptor = processBody(() => Promise.resolve(processedBody));
+        const result = await interceptor({ body: 'foobar' });
+        expect(result.body).toBe(processedBody);
+      });
+    });
+  });
+
+  describe('when the request has no body', () => {
+    it('does not add a body to the request', async () => {
+      const interceptor = processBody(() => ({}));
+      const result = await interceptor({ url: 'example.com' });
+      expect(result).not.toHaveProperty('body');
     });
   });
 });
