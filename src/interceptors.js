@@ -41,3 +41,10 @@ export function processBody(processorFunction) {
     return Object.assign({}, request, { body: await processorFunction(request.body) });
   };
 }
+
+export function rejectIfUnsuccessful(response) {
+  if (response.status < 200 || response.status >= 400) {
+    throw new InterceptorError('Response is not successful', { response });
+  }
+  return response;
+}

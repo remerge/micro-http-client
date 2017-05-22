@@ -1,4 +1,4 @@
-import { InterceptorError, addHeaders, prependHost, processBody } from './interceptors';
+import { InterceptorError, addHeaders, prependHost, processBody, rejectIfUnsuccessful } from './interceptors';
 
 describe('the prependHost() interceptor', () => {
   it('prepends the host to the request URL', () => {
@@ -116,6 +116,24 @@ describe('the processBody() interceptor', () => {
       const interceptor = processBody(() => ({}));
       const result = await interceptor({ url: 'example.com' });
       expect(result).not.toHaveProperty('body');
+    });
+  });
+});
+
+describe('the rejectIfUnsuccessful() interceptor', () => {
+  describe('when the response is successful', () => {
+    it('returns the response', () => {
+      const response = { status: 200 };
+      expect(rejectIfUnsuccessful(response)).toBe(response);
+    });
+  });
+
+  describe('when the response is not successful', () => {
+    it('throws an InterceptorError', () => {
+      const response = { status: 400 };
+      expect(() => rejectIfUnsuccessful(response)).toThrow(
+        new InterceptorError('Response is not successful', { response }),
+      );
     });
   });
 });
