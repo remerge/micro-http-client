@@ -2,7 +2,7 @@
 
 ## Standard Interceptors
 
-### `prependHost(host)`
+### `prependHost(string)`
 
 Prepends the given host to all requests. Requests are expected to contain a URL which is an absolute path fragment.
 
@@ -20,4 +20,23 @@ const client = new HttpClient({ requestInterceptors: [
 ]});
 client.fetch('/campaigns'); // -> GET "https://api.remerge.io/campaigns"
 client.fetch('https://www.google.com') // throws InterceptorError
+```
+
+### `addHeaders(object|function)`
+
+Includes the given headers in every request. Useful for MIME type and authentication headers.
+
+Parameter may be an object or a function returning an object or a Promise resolving to an object.
+
+Any headers specified on the request will override those set using `addHeaders()`.
+
+#### Examples
+
+```js
+const client = new HttpClient({ requestInterceptors: [
+  addHeaders({ Accept: 'application/json' }),
+  addHeaders(() => this.getAuthenticationHeaders()),
+]});
+client.fetch('/campaigns'); // -> { Accept: 'application/json', auth headers... }
+client.fetch('/campaigns', { headers: { Accept: 'text/csv' } }); // -> { Accept: 'text/csv' }
 ```
