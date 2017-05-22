@@ -13,13 +13,8 @@ import HttpClient from './HttpClient';
 })();
 
 describe('HttpClient', () => {
-  let httpClient;
-
-  beforeEach(() => {
-    httpClient = new HttpClient();
-  });
-
   it('calls `fetch`', async () => {
+    const httpClient = new HttpClient();
     const url = 'some/url';
     const requestObject = {foo: 'bar'};
     await httpClient.fetch(url, requestObject);
@@ -30,7 +25,7 @@ describe('HttpClient', () => {
     const interceptor = jest.fn(() => {
       return {};
     });
-    httpClient = new HttpClient({requestInterceptors: [interceptor]});
+    const httpClient = new HttpClient({requestInterceptors: [interceptor]});
     const url = 'some/url';
     await httpClient.fetch(url, {body: 'some body'});
     expect(interceptor).toHaveBeenCalledWith({url, body: 'some body'});
@@ -42,7 +37,7 @@ describe('HttpClient', () => {
       return Promise.resolve(mockRequest);
     });
 
-    httpClient = new HttpClient({requestInterceptors: [interceptor]});
+    const httpClient = new HttpClient({requestInterceptors: [interceptor]});
     await httpClient.fetch();
     expect(window.fetch).toHaveBeenCalledWith(mockRequest.url, mockRequest);
   });
@@ -52,7 +47,7 @@ describe('HttpClient', () => {
     const interceptor = () => {
       return interceptorResult;
     };
-    httpClient = new HttpClient({requestInterceptors: [interceptor]});
+    const httpClient = new HttpClient({requestInterceptors: [interceptor]});
     await httpClient.fetch();
     expect(window.fetch).toHaveBeenCalledWith(interceptorResult.url, interceptorResult);
   });
@@ -64,24 +59,24 @@ describe('HttpClient', () => {
       const secondInterceptor = jest.fn(() => {
         return {};
       });
-      httpClient = new HttpClient({
+      const httpClient = new HttpClient({
         requestInterceptors: [firstInterceptor, secondInterceptor],
       });
       await httpClient.fetch('someUrl');
       expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
     });
+  });
 
-    describe('which are asynchronous', () => {
-      it('passes the result of the first interceptor to the second interceptor', async () => {
-        const firstInterceptorResult = {foo: 'bar'};
-        const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
-        const secondInterceptor = jest.fn(() => Promise.resolve({}));
-        httpClient = new HttpClient({
-          requestInterceptors: [firstInterceptor, secondInterceptor],
-        });
-        await httpClient.fetch('someUrl');
-        expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+  describe('with multiple asynchronous request interceptors', () => {
+    it('passes the result of the first interceptor to the second interceptor', async () => {
+      const firstInterceptorResult = {foo: 'bar'};
+      const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
+      const secondInterceptor = jest.fn(() => Promise.resolve({}));
+      const httpClient = new HttpClient({
+        requestInterceptors: [firstInterceptor, secondInterceptor],
       });
+      await httpClient.fetch('someUrl');
+      expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
     });
   });
 
@@ -91,7 +86,7 @@ describe('HttpClient', () => {
       const interceptor = () => {
         throw interceptorError;
       };
-      httpClient = new HttpClient({requestInterceptors: [interceptor]});
+      const httpClient = new HttpClient({requestInterceptors: [interceptor]});
       await expect(httpClient.fetch()).rejects.toBe(interceptorError);
     });
   });
@@ -104,7 +99,7 @@ describe('HttpClient', () => {
       const interceptor = jest.fn(() => {
         return {};
       });
-      httpClient = new HttpClient({responseInterceptors: [interceptor]});
+      const httpClient = new HttpClient({responseInterceptors: [interceptor]});
 
       await httpClient.fetch();
       expect(interceptor).toHaveBeenCalledWith(mockResponse);
@@ -115,7 +110,7 @@ describe('HttpClient', () => {
       const interceptor = jest.fn(() => {
         return mockResult;
       });
-      httpClient = new HttpClient({responseInterceptors: [interceptor]});
+      const httpClient = new HttpClient({responseInterceptors: [interceptor]});
 
       const result = await httpClient.fetch();
       expect(result).toBe(mockResult);
@@ -125,7 +120,7 @@ describe('HttpClient', () => {
       const mockResult = {foo: 'bar'};
       const interceptor = jest.fn(() => Promise.resolve(mockResult));
 
-      httpClient = new HttpClient({responseInterceptors: [interceptor]});
+      const httpClient = new HttpClient({responseInterceptors: [interceptor]});
 
       const result = await httpClient.fetch();
       expect(result).toBe(mockResult);
@@ -139,27 +134,27 @@ describe('HttpClient', () => {
           return {};
         });
 
-        httpClient = new HttpClient({
+        const httpClient = new HttpClient({
           responseInterceptors: [firstInterceptor, secondInterceptor],
         });
 
         await httpClient.fetch();
         expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
       });
+    });
 
-      describe('which are asynchronous', () => {
-        it('invokes the second response interceptor with the result of the first', async () => {
-          const firstInterceptorResult = {foo: 'bar'};
-          const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
-          const secondInterceptor = jest.fn(() => {});
+    describe('and there are multiple asynchronous response interceptors', () => {
+      it('invokes the second response interceptor with the result of the first', async () => {
+        const firstInterceptorResult = {foo: 'bar'};
+        const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
+        const secondInterceptor = jest.fn(() => {});
 
-          httpClient = new HttpClient({
-            responseInterceptors: [firstInterceptor, secondInterceptor],
-          });
-
-          await httpClient.fetch();
-          expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
+        const httpClient = new HttpClient({
+          responseInterceptors: [firstInterceptor, secondInterceptor],
         });
+
+        await httpClient.fetch();
+        expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
       });
     });
   });
@@ -170,7 +165,7 @@ describe('HttpClient', () => {
       const interceptor = () => {
         throw interceptorError;
       };
-      httpClient = new HttpClient({responseInterceptors: [interceptor]});
+      const httpClient = new HttpClient({responseInterceptors: [interceptor]});
       await expect(httpClient.fetch()).rejects.toBe(interceptorError);
     });
   });
