@@ -40,3 +40,20 @@ const client = new HttpClient({ requestInterceptors: [
 client.fetch('/campaigns'); // -> { Accept: 'application/json', auth headers... }
 client.fetch('/campaigns', { headers: { Accept: 'text/csv' } }); // -> { Accept: 'text/csv' }
 ```
+
+### `processBody(function)`
+
+Applies the given function to the request or response body, replacing the original. The function may return a promise.
+
+The function will not be invoked unless the body property is present.
+
+Note that a GET or HEAD request cannot have a body, and no special handling is included for converting the body to URL parameters, although this would be a good candidate for a future interceptor.
+
+#### Examples
+
+```js
+const client = new HttpClient({
+  requestInterceptors: [ processBody(JSON.stringify) ],
+  responseInterceptors: [ processBody(JSON.parse) ],
+});
+```
