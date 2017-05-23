@@ -14,7 +14,7 @@ import HttpClient from './HttpClient';
 
 describe('HttpClient', () => {
   it('calls `fetch`', async () => {
-    const httpClient = new HttpClient();
+    const httpClient = new HttpClient({});
     const url = 'some/url';
     const requestObject = { foo: 'bar' };
     await httpClient.fetch(url, requestObject);

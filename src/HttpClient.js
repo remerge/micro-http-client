@@ -2,7 +2,7 @@ async function processInterceptor(memo, interceptor) {
   return interceptor(await memo);
 }
 
-function HttpClient({ requestInterceptors = [], responseInterceptors = [] } = {}) {
+function HttpClient({ requestInterceptors = [], responseInterceptors = [] }) {
   const client = Object.create(HttpClient.prototype);
 
   Object.assign(client, {
