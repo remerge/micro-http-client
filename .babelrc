@@ -1,6 +1,18 @@
 {
-  "presets": [
-    "env"
+  "ignore": [
+    "node_modules/**"
   ],
-  "sourceMaps": "inline"
+  "env": {
+    "test": {
+      "presets": [
+        "env"
+      ],
+      "sourceMaps": "inline"
+    },
+    "development": {
+      "presets": [
+        "es2015-rollup"
+      ]
+    }
+  }
 }
