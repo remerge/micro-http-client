@@ -1,6 +1,6 @@
 const hasOwnProperty = (object, property) => Object.hasOwnProperty.call(object, property);
 
-export function InterceptorError(message, additional = {}) {
+export function ReducerError(message, additional = {}) {
   Error.call(this, message);
   this.message = message;
   Object.assign(this, additional);
@@ -17,7 +17,7 @@ export function prependHost(host) {
   return (request) => {
     const { url: absolutePath } = request;
     if (absolutePath[0] !== '/') {
-      throw new InterceptorError('prependHost() requires an absolute path', { request });
+      throw new ReducerError('prependHost() requires an absolute path', { request });
     }
     return Object.assign({}, request, { url: `${sanitizedHost}${absolutePath}` });
   };
@@ -44,7 +44,7 @@ export function processBody(processorFunction) {
 
 export function rejectIfUnsuccessful(response) {
   if (response.status < 200 || response.status >= 400) {
-    throw new InterceptorError('Response is not successful', { response });
+    throw new ReducerError('Response is not successful', { response });
   }
   return response;
 }
