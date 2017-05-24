@@ -108,7 +108,7 @@ Note that it does not accept a `Request` object (as in the one-parameter form of
 
 When called, it will:
 
-1. Construct copy of the `options` object with an additional `url` property assigned the value of the `url` parameter
+1. Construct a copy of the `options` object with an additional `url` property assigned the value of the `url` parameter
 2. Iterate over the `requestReducers` array, invoking the first function with the object from `#1`, and each subsequent reducer function with the return value of the last
 3. Call the global `fetch()` method with the result
 4. Iterate over the `responseReducers` array, invoking the first function with the `Response` from `fetch()`, and each subsequent reducer function with the return value of the last
