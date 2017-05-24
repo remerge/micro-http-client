@@ -1,4 +1,4 @@
-import HttpClient from './HttpClient';
-import { InterceptorError, prependHost, addHeaders, processBody, rejectIfUnsuccessful } from './interceptors';
+import createFetch from './createFetch';
+import { ReducerError, prependHost, addHeaders, processBody, rejectIfUnsuccessful } from './reducers';
 
-export { HttpClient, InterceptorError, prependHost, addHeaders, processBody, rejectIfUnsuccessful };
+export { createFetch, ReducerError, prependHost, addHeaders, processBody, rejectIfUnsuccessful };
