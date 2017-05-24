@@ -1,6 +1,6 @@
 {
-  "name": "@remerge/http-client",
-  "version": "1.0.0",
+  "name": "micro-http-client",
+  "version": "0.0.1",
   "description": "Wraps the Fetch API adding request, response and error processing",
   "main": "dist/main.js",
   "files": [
