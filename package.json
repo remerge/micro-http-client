@@ -1,6 +1,6 @@
 {
   "name": "micro-http-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Wraps the Fetch API adding straightforward request and response processing",
   "main": "dist/main.js",
   "files": [
@@ -12,7 +12,7 @@
     "prepublish": "rollup -c",
     "start": "rollup -c --watch",
     "start-test": "jest --watch",
-    "test": "jest"
+    "test": "eslint . && jest"
   },
   "repository": "remerge/micro-http-client",
   "devDependencies": {

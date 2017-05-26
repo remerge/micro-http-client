@@ -1,4 +1,4 @@
-const global = (function () {
+const global = (function getGlobalObject() {
   /* eslint-disable no-eval */
   return this || (1, eval)('this');
 }());
