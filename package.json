@@ -12,7 +12,7 @@
     "prepublish": "rollup -c",
     "start": "rollup -c --watch",
     "start-test": "jest --watch",
-    "test": "jest"
+    "test": "eslint . && jest"
   },
   "repository": "remerge/micro-http-client",
   "devDependencies": {
