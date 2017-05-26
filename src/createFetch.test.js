@@ -21,107 +21,107 @@ describe('createFetch', () => {
     expect(global.fetch).toHaveBeenCalledWith(url, { url, foo: 'bar' });
   });
 
-  it('invokes request interceptors with the request object', async () => {
-    const interceptor = jest.fn(() => ({}));
-    const newFetch = createFetch({ requestInterceptors: [interceptor] });
+  it('invokes request reducers with the request object', async () => {
+    const reducer = jest.fn(() => ({}));
+    const newFetch = createFetch({ requestReducers: [reducer] });
     const url = 'some/url';
     await newFetch(url, { body: 'some body' });
-    expect(interceptor).toHaveBeenCalledWith({ url, body: 'some body' });
+    expect(reducer).toHaveBeenCalledWith({ url, body: 'some body' });
   });
 
-  it('waits for an asynchronous request interceptor', async () => {
+  it('waits for an asynchronous request reducer', async () => {
     const mockRequest = { url: 'mockUrl', foo: 'bar' };
-    const interceptor = jest.fn(() => Promise.resolve(mockRequest));
+    const reducer = jest.fn(() => Promise.resolve(mockRequest));
 
-    const newFetch = createFetch({ requestInterceptors: [interceptor] });
+    const newFetch = createFetch({ requestReducers: [reducer] });
     await newFetch();
     expect(global.fetch).toHaveBeenCalledWith(mockRequest.url, mockRequest);
   });
 
-  it('calls `fetch` with the output of the interceptors', async () => {
-    const interceptorResult = { method: 'POST', url: 'somewhere.com' };
-    const interceptor = () => interceptorResult;
-    const newFetch = createFetch({ requestInterceptors: [interceptor] });
+  it('calls `fetch` with the output of the reducers', async () => {
+    const reducerResult = { method: 'POST', url: 'somewhere.com' };
+    const reducer = () => reducerResult;
+    const newFetch = createFetch({ requestReducers: [reducer] });
     await newFetch();
-    expect(global.fetch).toHaveBeenCalledWith(interceptorResult.url, interceptorResult);
+    expect(global.fetch).toHaveBeenCalledWith(reducerResult.url, reducerResult);
   });
 
-  describe('with multiple request interceptors', () => {
-    it('passes the result of the first interceptor to the second interceptor', async () => {
+  describe('with multiple request reducers', () => {
+    it('passes the result of the first reducer to the second reducer', async () => {
       const firstInterceptorResult = { foo: 'bar' };
       const firstInterceptor = jest.fn(() => firstInterceptorResult);
       const secondInterceptor = jest.fn(() => ({}));
       const newFetch = createFetch({
-        requestInterceptors: [firstInterceptor, secondInterceptor],
+        requestReducers: [firstInterceptor, secondInterceptor],
       });
       await newFetch('someUrl');
       expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
     });
   });
 
-  describe('with multiple asynchronous request interceptors', () => {
-    it('passes the result of the first interceptor to the second interceptor', async () => {
+  describe('with multiple asynchronous request reducers', () => {
+    it('passes the result of the first reducer to the second reducer', async () => {
       const firstInterceptorResult = { foo: 'bar' };
       const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
       const secondInterceptor = jest.fn(() => Promise.resolve({}));
       const newFetch = createFetch({
-        requestInterceptors: [firstInterceptor, secondInterceptor],
+        requestReducers: [firstInterceptor, secondInterceptor],
       });
       await newFetch('someUrl');
       expect(secondInterceptor).toHaveBeenCalledWith(firstInterceptorResult);
     });
   });
 
-  describe('when a request interceptor throws an error', () => {
+  describe('when a request reducer throws an error', () => {
     it('is immediately raised', async () => {
-      const interceptorError = new Error();
-      const interceptor = () => {
-        throw interceptorError;
+      const reducerError = new Error();
+      const reducer = () => {
+        throw reducerError;
       };
-      const newFetch = createFetch({ requestInterceptors: [interceptor] });
-      await expect(newFetch()).rejects.toBe(interceptorError);
+      const newFetch = createFetch({ requestReducers: [reducer] });
+      await expect(newFetch()).rejects.toBe(reducerError);
     });
   });
 
   describe('when the fetch() resolves', () => {
-    it('invokes the response interceptors with the Response', async () => {
+    it('invokes the response reducers with the Response', async () => {
       const mockResponse = { foo: 'bar' };
       global.fetch = jest.fn(() => Promise.resolve(mockResponse));
 
-      const interceptor = jest.fn(() => ({}));
-      const newFetch = createFetch({ responseInterceptors: [interceptor] });
+      const reducer = jest.fn(() => ({}));
+      const newFetch = createFetch({ responseReducers: [reducer] });
 
       await newFetch();
-      expect(interceptor).toHaveBeenCalledWith(mockResponse);
+      expect(reducer).toHaveBeenCalledWith(mockResponse);
     });
 
-    it('returns a Promise that resolves with the return value of the interceptor', async () => {
+    it('returns a Promise that resolves with the return value of the reducer', async () => {
       const mockResult = { foo: 'bar' };
-      const interceptor = jest.fn(() => mockResult);
-      const newFetch = createFetch({ responseInterceptors: [interceptor] });
+      const reducer = jest.fn(() => mockResult);
+      const newFetch = createFetch({ responseReducers: [reducer] });
 
       const result = await newFetch();
       expect(result).toBe(mockResult);
     });
 
-    it('waits for an asynchronous response interceptor', async () => {
+    it('waits for an asynchronous response reducer', async () => {
       const mockResult = { foo: 'bar' };
-      const interceptor = jest.fn(() => Promise.resolve(mockResult));
+      const reducer = jest.fn(() => Promise.resolve(mockResult));
 
-      const newFetch = createFetch({ responseInterceptors: [interceptor] });
+      const newFetch = createFetch({ responseReducers: [reducer] });
 
       const result = await newFetch();
       expect(result).toBe(mockResult);
     });
 
-    describe('and there are multiple response interceptors', () => {
-      it('invokes the second response interceptor with the result of the first', async () => {
+    describe('and there are multiple response reducers', () => {
+      it('invokes the second response reducer with the result of the first', async () => {
         const firstInterceptorResult = { foo: 'bar' };
         const firstInterceptor = jest.fn(() => firstInterceptorResult);
         const secondInterceptor = jest.fn(() => ({}));
 
         const newFetch = createFetch({
-          responseInterceptors: [firstInterceptor, secondInterceptor],
+          responseReducers: [firstInterceptor, secondInterceptor],
         });
 
         await newFetch();
@@ -129,14 +129,14 @@ describe('createFetch', () => {
       });
     });
 
-    describe('and there are multiple asynchronous response interceptors', () => {
-      it('invokes the second response interceptor with the result of the first', async () => {
+    describe('and there are multiple asynchronous response reducers', () => {
+      it('invokes the second response reducer with the result of the first', async () => {
         const firstInterceptorResult = { foo: 'bar' };
         const firstInterceptor = jest.fn(() => Promise.resolve(firstInterceptorResult));
         const secondInterceptor = jest.fn(() => {});
 
         const newFetch = createFetch({
-          responseInterceptors: [firstInterceptor, secondInterceptor],
+          responseReducers: [firstInterceptor, secondInterceptor],
         });
 
         await newFetch();
@@ -145,14 +145,14 @@ describe('createFetch', () => {
     });
   });
 
-  describe('when a response interceptor throws an error', () => {
+  describe('when a response reducer throws an error', () => {
     it('is immediately raised', async () => {
-      const interceptorError = new Error();
-      const interceptor = () => {
-        throw interceptorError;
+      const reducerError = new Error();
+      const reducer = () => {
+        throw reducerError;
       };
-      const newFetch = createFetch({ responseInterceptors: [interceptor] });
-      await expect(newFetch()).rejects.toBe(interceptorError);
+      const newFetch = createFetch({ responseReducers: [reducer] });
+      await expect(newFetch()).rejects.toBe(reducerError);
     });
   });
 });
