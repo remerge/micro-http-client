@@ -4,6 +4,6 @@ export default {
   entry: 'src/main.js',
   format: 'umd',
   dest: 'dist/main.js',
-  moduleName: 'http-client',
+  moduleName: 'micro-http-client',
   plugins: [babel()],
 };
