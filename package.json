@@ -1,6 +1,6 @@
 {
   "name": "micro-http-client",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Wraps the Fetch API adding straightforward request and response processing",
   "main": "dist/main.js",
   "files": [
