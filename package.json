@@ -3,6 +3,7 @@
   "version": "0.0.8",
   "description": "Wraps the Fetch API adding straightforward request and response processing",
   "main": "dist/main.js",
+  "types": "src/main.d.ts",
   "files": [
     "dist/main.js",
     "src"
